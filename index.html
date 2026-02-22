@@ -131,8 +131,8 @@
         <button class="btn-back" id="btn-back-mamuiri" onclick="goBackFromMamuiri()">← 이전</button>
         <div class="glass-card center-card">
             <div class="mamuiri-icon">🎙️</div>
-            <h2 class="mamuiri-title">좋은 소리는 당신 같은 최고의 음향 스텝이 있어야 가능해요.</h2>
-            <p class="mamuiri-sub">혹시 음향 스텝 일에 관심이 있다면 간단한 정보를 남겨주세요 😊</p>
+            <h2 class="mamuiri-title">당신 역시 최고의 음향 스텝이에요.</h2>
+            <p class="mamuiri-sub">음향 스텝 일에 관심이 있다면 간단한 정보를 남겨주세요 😊</p>
             <button class="btn-primary" onclick="goToCallsheet()">📝 스텝 등록하기 →</button>
 
             <div class="stats-container" id="stats-container">
@@ -155,7 +155,7 @@
     <div class="screen" id="screen-part2-intro">
         <div class="glass-card center-card">
             <div class="part2-emoji">🎉</div>
-            <h2 class="part2-title">잠깐, 여기서 끝이 아니에요!</h2>
+            <h2 class="part2-title">소리를그리다 퀴즈!</h2>
             <p class="part2-sub">소리를그리다에 대해 간단히 알아보는 퀴즈를 준비했어요.<br>딱 3문제, 재밌을 거예요 😊</p>
             <button class="btn-primary" onclick="startPartTwo()">🎵 퀴즈 풀러 가기 →</button>
             <button class="btn-ghost" onclick="goToEnding()">괜찮아요, 넘길게요</button>
@@ -183,7 +183,7 @@
         <div class="glass-card center-card">
             <div class="about-icon">🎨</div>
             <h2 class="about-title">소리를그리다 (SRG SOUND)</h2>
-            <p class="about-tagline">“소리도 사람들에게 경험을 전달한다”</p>
+            <p class="about-tagline">“소리로 경험을 전달한다”</p>
 
             <div class="about-content">
                 <div class="about-item">
@@ -200,7 +200,7 @@
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="goToEnding()">재밌게 잘 봤어요! 👋</button>
+            <button class="btn-primary" onclick="goToEnding()">감사합니다. 또 봐요 👋</button>
         </div>
     </div>
 
@@ -210,8 +210,14 @@
             <div class="ending-icon">🎙️</div>
             <h2 class="ending-title">테스트 재밌으셨나요?</h2>
             <p class="ending-sub">소리를그리다도 당신과의<br>좋은 만남을 기대하고 있어요 😊</p>
-            <p class="ending-email" style="-webkit-user-select:text;user-select:text;"><span>doubjin@gmail.com</span>
-            </p>
+            <a class="ending-insta" href="https://www.instagram.com/srg_sound?igsh=d3B1YmwzOTNrbHBz&utm_source=qr"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path
+                        d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2zm-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z" />
+                </svg>
+                @srg_sound
+            </a>
             <button class="btn-primary" onclick="restartTest()">🔄 테스트 처음으로 →</button>
             <div class="score-summary" id="score-summary"></div>
         </div>

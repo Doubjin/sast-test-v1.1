@@ -142,12 +142,12 @@ const PART2_QUESTIONS = [
 ];
 
 const CALLSHEET_FIELDS = [
-    { id: 'cs_name', label: '스텝 이름', question: '이름이 어떻게 되세요?', type: 'text', placeholder: '홍길동' },
+    { id: 'cs_name', label: '이름', question: '이름이 어떻게 되세요?', type: 'text', placeholder: '홍길동' },
     { id: 'cs_gender', label: '성별', question: '성별을 선택해주세요', type: 'card', options: ['남', '여', '기타'] },
-    { id: 'cs_age', label: '나이', question: '나이가 어떻게 되세요?', type: 'text', placeholder: '예: 27' },
+    { id: 'cs_age', label: '나이', question: '나이가 어떻게 되세요?', type: 'number', placeholder: '27' },
     { id: 'cs_region', label: '거주 지역', question: '어느 지역에 계세요?', type: 'text', placeholder: '예: 마포구' },
-    { id: 'cs_phone', label: '연락처', question: '연락처를 남겨주세요', type: 'text', placeholder: '010-0000-0000' },
-    { id: 'cs_email', label: '이메일', question: '이메일 주소를 알려주세요', type: 'text', placeholder: 'you@example.com' },
+    { id: 'cs_phone', label: '연락처', question: '연락처를 남겨주세요', type: 'tel', placeholder: '010-0000-0000' },
+    { id: 'cs_email', label: '이메일', question: '이메일 주소를 알려주세요', type: 'email', placeholder: 'you@example.com' },
     { id: 'cs_career', label: '경력', question: '현장 경력이 어떻게 되세요?', type: 'card', options: ['신입', '1년', '2년', '3년+'] },
     {
         id: 'cs_skills', label: '특기 파트', question: '잘하는 파트를 모두 선택해주세요', type: 'multi',
@@ -535,6 +535,12 @@ function renderCallsheetForm() {
         let inputHTML = '';
         if (f.type === 'text') {
             inputHTML = `<input class="cs-input" id="${f.id}" type="text" placeholder="${f.placeholder}" />`;
+        } else if (f.type === 'number') {
+            inputHTML = `<input class="cs-input" id="${f.id}" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="${f.placeholder}" />`;
+        } else if (f.type === 'tel') {
+            inputHTML = `<input class="cs-input" id="${f.id}" type="tel" inputmode="tel" pattern="[0-9\\-]*" placeholder="${f.placeholder}" />`;
+        } else if (f.type === 'email') {
+            inputHTML = `<input class="cs-input" id="${f.id}" type="email" inputmode="email" placeholder="${f.placeholder}" />`;
         } else if (f.type === 'card') {
             inputHTML = `
             <div class="cs-card-options" data-field="${f.id}">
@@ -614,7 +620,7 @@ function csToggleMultiNew(fieldId, optIdx, el) {
 function submitCallsheet() {
     // Collect text inputs
     CALLSHEET_FIELDS.forEach(f => {
-        if (f.type === 'text') {
+        if (['text', 'number', 'tel', 'email'].includes(f.type)) {
             const inp = document.getElementById(f.id);
             if (inp) state.csData[f.id] = inp.value.trim();
         }
@@ -729,7 +735,11 @@ function answerP2(idx, btnEl) {
 
     const fb = document.getElementById('p2-feedback');
     fb.className = 'feedback-card ' + (correct ? 'correct' : 'wrong');
-    fb.innerHTML = `<strong>${correct ? '✅ 정답이에요!' : '❌ 아쉽게도 오답이에요.'}</strong><br>${q.explanation}`;
+    if (correct) {
+        fb.innerHTML = `<strong>✅ 정답이에요!</strong><br>${q.explanation}`;
+    } else {
+        fb.innerHTML = `<div class="wrong-header">❌ 오답!</div><div class="wrong-explanation">💡 ${q.explanation}</div>`;
+    }
     fb.style.display = 'block';
     document.getElementById('p2-next-btn').style.display = 'block';
 }
