@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAST — Sound And Style Type | 소리를그리다</title>
+    <meta name="description" content="소리로 보는 나의 현장 스텝 성향 테스트. 6개의 질문으로 당신의 사운드 유형을 찾아드려요." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===================== INTRO ===================== -->
+    <div class="screen active" id="screen-intro">
+        <div class="logo">SRG SOUND</div>
+        <div class="intro-card glass-card">
+            <div class="brand-title">SAST</div>
+            <div class="brand-sub">Sound And Style Type</div>
+            <p class="brand-desc">소리로 보는 나의 현장 스텝 성향</p>
+            <div class="type-icons">
+                <span class="type-icon" style="--c:#4298B4" data-float="0">🎙️</span>
+                <span class="type-icon" style="--c:#33A474" data-float="1">📡</span>
+                <span class="type-icon" style="--c:#88619A" data-float="2">🎚️</span>
+                <span class="type-icon" style="--c:#E4AE3A" data-float="3">🎤</span>
+            </div>
+            <p class="intro-sub">나는 현장에서 어떤 음향 스텝 성향일까?<br>6개의 질문으로 알아보세요.</p>
+            <button class="btn-primary" id="btn-start" onclick="startTest()">
+                🎙️ 테스트 시작하기 →
+            </button>
+            <div class="badges">
+                <span>✓ 3분</span>
+                <span>✓ 무료</span>
+                <span>✓ 9문항</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== QUESTION ===================== -->
+    <div class="screen" id="screen-question">
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-dot" id="progress-dot"></div>
+        </div>
+        <button class="btn-back" id="btn-back-q" onclick="goBack()" style="visibility:hidden">← 이전</button>
+        <div class="q-counter" id="q-counter">Q1 / 6</div>
+        <div class="question-card glass-card" id="question-card">
+            <div class="q-text" id="q-text"></div>
+            <div class="choices" id="choices"></div>
+        </div>
+    </div>
+
+    <!-- ===================== LOADING ===================== -->
+    <div class="screen" id="screen-loading">
+        <div class="loading-card glass-card">
+            <div class="loading-icon">⚙️</div>
+            <div class="loading-title">분석 중...</div>
+            <p class="loading-sub">당신의 사운드 성향을 분석하고 있어요</p>
+            <div class="loading-bar-track">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+            <div class="loading-steps" id="loading-steps"></div>
+        </div>
+    </div>
+
+    <!-- ===================== RESULT ===================== -->
+    <div class="screen" id="screen-result">
+        <div class="result-card glass-card" id="result-card">
+            <div class="result-label">당신의 SAST 유형은</div>
+            <div class="result-header">
+                <div class="result-icon" id="result-icon"></div>
+                <div class="result-type-badge" id="result-badge"></div>
+            </div>
+            <div class="result-tagline" id="result-tagline"></div>
+            <p class="result-desc" id="result-desc"></p>
+            <div class="result-stats" id="result-stats"></div>
+            <button class="btn-primary" onclick="goToMaruiri()">
+                종합 평가 →
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================== 마무리 ===================== -->
+    <div class="screen" id="screen-mamuiri">
+        <button class="btn-back" id="btn-back-mamuiri" onclick="goBackFromMamuiri()">← 이전</button>
+        <div class="glass-card center-card">
+            <div class="mamuiri-icon">🎙️</div>
+            <h2 class="mamuiri-title">좋은 소리는 당신 같은 최고의 음향 스텝이 있어야 가능해요.</h2>
+            <p class="mamuiri-sub">혹시 음향 스텝 일에 관심이 있다면 간단한 정보를 남겨주세요 😊</p>
+            <button class="btn-primary" onclick="goToCallsheet()">📝 스텝 등록하기 →</button>
+
+            <div class="stats-container" id="stats-container">
+                <p class="stats-title">전체 참여자 유형 통계</p>
+                <div id="stats-list"></div>
+            </div>
+
+            <button class="btn-ghost" onclick="goToPartTwo()">재밌었어요 👍 퀴즈만 풀고 갈게요</button>
+        </div>
+    </div>
+
+    <!-- ===================== CALLSHEET ===================== -->
+    <div class="screen" id="screen-callsheet">
+        <div class="question-card glass-card" id="cs-card">
+            <!-- JS로 동적 생성 -->
+        </div>
+    </div>
+
+    <!-- ===================== PART2 TRANSITION ===================== -->
+    <div class="screen" id="screen-part2-intro">
+        <div class="glass-card center-card">
+            <div class="part2-emoji">🎉</div>
+            <h2 class="part2-title">잠깐, 여기서 끝이 아니에요!</h2>
+            <p class="part2-sub">소리를그리다에 대해 간단히 알아보는 퀴즈를 준비했어요.<br>딱 3문제, 재밌을 거예요 😊</p>
+            <button class="btn-primary" onclick="startPartTwo()">🎵 퀴즈 풀러 가기 →</button>
+            <button class="btn-ghost" onclick="goToEnding()">괜찮아요, 넘길게요</button>
+        </div>
+    </div>
+
+    <!-- ===================== PART2 QUESTION ===================== -->
+    <div class="screen" id="screen-part2">
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" id="p2-progress-bar"></div>
+            <div class="progress-dot" id="p2-progress-dot"></div>
+        </div>
+        <div class="q-counter" id="p2-counter">Q1 / 3</div>
+        <div class="question-card glass-card" id="p2-card">
+            <div class="q-text" id="p2-text"></div>
+            <div class="choices" id="p2-choices"></div>
+            <div class="feedback-card" id="p2-feedback" style="display:none"></div>
+            <button class="btn-primary" id="p2-next-btn" style="display:none;margin-top:10px"
+                onclick="nextPartTwoQ()">다음으로 →</button>
+        </div>
+    </div>
+
+    <!-- ===================== ABOUT SRG SOUND ===================== -->
+    <div class="screen" id="screen-about-srg">
+        <div class="glass-card center-card">
+            <div class="about-icon">🎨</div>
+            <h2 class="about-title">소리를그리다 (SRG SOUND)</h2>
+            <p class="about-tagline">“소리도 사람들에게 경험을 전달한다”</p>
+
+            <div class="about-content">
+                <div class="about-item">
+                    <span class="emoji">📺</span>
+                    <p>방송, 광고, 드라마, 영화 동시녹음 전문</p>
+                </div>
+                <div class="about-item">
+                    <span class="emoji">🏎️</span>
+                    <p>현대 N 사운드 아카이빙 및 사운드 브랜딩</p>
+                </div>
+                <div class="about-item">
+                    <span class="emoji">🎬</span>
+                    <p>놀면뭐하니, 르세라핌 다큐 등 주요작 참여</p>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="goToEnding()">재밌게 잘 봤어요! 👋</button>
+        </div>
+    </div>
+
+    <!-- ===================== ENDING ===================== -->
+    <div class="screen" id="screen-ending">
+        <div class="glass-card center-card">
+            <div class="ending-icon">🎙️</div>
+            <h2 class="ending-title">테스트 재밌으셨나요?</h2>
+            <p class="ending-sub">소리를그리다도 당신과의<br>좋은 만남을 기대하고 있어요 😊</p>
+            <p class="ending-email">doubjin@gmail.com</p>
+            <button class="btn-primary" onclick="restartTest()">🔄 테스트 처음으로 →</button>
+            <div class="score-summary" id="score-summary"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
