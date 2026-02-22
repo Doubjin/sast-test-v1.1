@@ -773,3 +773,205 @@ function goToEnding() {
 function restartTest() {
     showScreen('intro');
 }
+
+// ─── SNS 공유 ─────────────────────────────────────────────────────────────
+const SHARE_URL = window.location.href;
+
+function getShareText() {
+    const t = state.resultType || TYPES.ambient;
+    return `🎙️ 나의 SAST 유형은 "${t.short}" — ${t.tagline}\n소리로 보는 나의 현장 스텝 성향 테스트\n`;
+}
+
+// 공유 카드 이미지를 Canvas로 생성
+function createShareCard() {
+    return new Promise((resolve) => {
+        const t = state.resultType || TYPES.ambient;
+        const cvs = document.createElement('canvas');
+        cvs.width = 1080;
+        cvs.height = 1080;
+        const c = cvs.getContext('2d');
+
+        // 배경 그라데이션
+        const grad = c.createLinearGradient(0, 0, 0, 1080);
+        grad.addColorStop(0, '#F8F9FB');
+        grad.addColorStop(1, t.color + '22');
+        c.fillStyle = grad;
+        c.fillRect(0, 0, 1080, 1080);
+
+        // 장식 원
+        c.fillStyle = t.color + '15';
+        c.beginPath(); c.arc(820, 200, 260, 0, Math.PI * 2); c.fill();
+        c.fillStyle = t.color + '10';
+        c.beginPath(); c.arc(200, 850, 200, 0, Math.PI * 2); c.fill();
+
+        // 상단 로고
+        c.fillStyle = '#999';
+        c.font = '600 28px "Noto Sans KR", sans-serif';
+        c.textAlign = 'center';
+        c.fillText('SRG SOUND', 540, 80);
+
+        // 브랜드 타이틀
+        c.fillStyle = '#1A1A2E';
+        c.font = '700 72px "Bebas Neue", sans-serif';
+        c.letterSpacing = '4px';
+        c.fillText('SAST', 540, 170);
+
+        c.fillStyle = '#666';
+        c.font = '400 24px "Noto Sans KR", sans-serif';
+        c.fillText('Sound And Style Type', 540, 210);
+
+        // 아이콘 대형
+        c.font = '180px serif';
+        c.fillText(t.icon, 540, 430);
+
+        // 유형 이름 배지
+        c.fillStyle = t.color;
+        const badgeW = 320, badgeH = 64, badgeX = 540 - badgeW / 2, badgeY = 480;
+        c.beginPath();
+        c.roundRect(badgeX, badgeY, badgeW, badgeH, 32);
+        c.fill();
+        c.fillStyle = '#FFFFFF';
+        c.font = '700 30px "Noto Sans KR", sans-serif';
+        c.fillText(t.label, 540, 522);
+
+        // 태그라인
+        c.fillStyle = '#333';
+        c.font = '500 34px "Noto Sans KR", sans-serif';
+        c.fillText(t.tagline, 540, 600);
+
+        // 성향 지표 바
+        const barStartY = 660;
+        t.stats.forEach((s, i) => {
+            const y = barStartY + i * 70;
+            // 라벨
+            c.fillStyle = '#555';
+            c.font = '500 24px "Noto Sans KR", sans-serif';
+            c.textAlign = 'left';
+            c.fillText(s.label, 200, y + 5);
+
+            // 트랙 배경
+            c.fillStyle = '#E8E8E8';
+            c.beginPath();
+            c.roundRect(340, y - 16, 440, 28, 14);
+            c.fill();
+
+            // 바
+            c.fillStyle = t.color;
+            c.beginPath();
+            c.roundRect(340, y - 16, 440 * (s.pct / 100), 28, 14);
+            c.fill();
+
+            // 퍼센트
+            c.fillStyle = '#333';
+            c.textAlign = 'right';
+            c.font = '600 22px "Noto Sans KR", sans-serif';
+            c.fillText(s.pct + '%', 820, y + 5);
+        });
+
+        // 하단 안내
+        c.textAlign = 'center';
+        c.fillStyle = '#AAA';
+        c.font = '400 22px "Noto Sans KR", sans-serif';
+        c.fillText('소리로 보는 나의 현장 스텝 성향', 540, 1010);
+        c.fillStyle = t.color;
+        c.font = '600 24px "Noto Sans KR", sans-serif';
+        c.fillText('나도 테스트하기 →', 540, 1050);
+
+        resolve(cvs);
+    });
+}
+
+// 이미지로 저장
+async function saveShareCard() {
+    const btn = document.getElementById('share-save');
+    btn.innerHTML = '⏳ 이미지 생성 중...';
+    btn.disabled = true;
+
+    try {
+        const cvs = await createShareCard();
+        const link = document.createElement('a');
+        const t = state.resultType || TYPES.ambient;
+        link.download = `SAST_${t.short}_결과.png`;
+        link.href = cvs.toDataURL('image/png');
+        link.click();
+        btn.innerHTML = '✅ 저장 완료!';
+        setTimeout(() => { btn.innerHTML = '📷 이미지로 저장하기'; btn.disabled = false; }, 2000);
+    } catch (err) {
+        console.error(err);
+        btn.innerHTML = '📷 이미지로 저장하기';
+        btn.disabled = false;
+    }
+}
+
+// 카카오톡 공유
+function shareKakao() {
+    const t = state.resultType || TYPES.ambient;
+    const text = getShareText();
+
+    // 카카오톡 앱이 없는 경우를 대비한 범용 방식
+    if (navigator.share) {
+        navigator.share({
+            title: `SAST 결과: ${t.short}`,
+            text: text,
+            url: SHARE_URL,
+        }).catch(() => { });
+    } else {
+        // 카카오톡 공유 링크 (모바일)
+        const kakaoUrl = `https://sharer.kakao.com/talk/friends/picker/link?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(text)}`;
+        window.open(kakaoUrl, '_blank', 'width=600,height=700');
+    }
+}
+
+// 인스타그램 공유 (이미지 저장 후 스토리/피드 안내)
+async function shareInstagram() {
+    const btn = document.getElementById('share-instagram');
+
+    try {
+        const cvs = await createShareCard();
+
+        // 모바일에서 Web Share API 지원하면 직접 공유
+        if (navigator.share && navigator.canShare) {
+            cvs.toBlob(async (blob) => {
+                const file = new File([blob], 'sast_result.png', { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'SAST 결과',
+                        text: getShareText()
+                    });
+                } else {
+                    downloadAndAlert(cvs);
+                }
+            }, 'image/png');
+        } else {
+            downloadAndAlert(cvs);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function downloadAndAlert(cvs) {
+    const t = state.resultType || TYPES.ambient;
+    const link = document.createElement('a');
+    link.download = `SAST_${t.short}_결과.png`;
+    link.href = cvs.toDataURL('image/png');
+    link.click();
+    setTimeout(() => {
+        alert('이미지가 저장되었어요! 📷\n인스타그램 스토리나 피드에 업로드해주세요.');
+    }, 500);
+}
+
+// 페이스북 공유
+function shareFacebook() {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SHARE_URL)}&quote=${encodeURIComponent(getShareText())}`;
+    window.open(url, '_blank', 'width=600,height=500');
+}
+
+// 스레드 공유
+function shareThreads() {
+    const t = state.resultType || TYPES.ambient;
+    const text = `${getShareText()}${SHARE_URL}`;
+    const url = `https://www.threads.net/intent/post?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'width=600,height=700');
+}

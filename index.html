@@ -80,6 +80,33 @@
             <div class="result-tagline" id="result-tagline"></div>
             <p class="result-desc" id="result-desc"></p>
             <div class="result-stats" id="result-stats"></div>
+
+            <!-- SNS 공유 섹션 -->
+            <div class="share-section">
+                <p class="share-title">결과 공유하기</p>
+                <div class="share-buttons">
+                    <button class="share-btn share-kakao" onclick="shareKakao()" id="share-kakao">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 3C6.48 3 2 6.36 2 10.44c0 2.62 1.75 4.93 4.38 6.24l-1.12 4.16c-.1.36.32.65.62.44l4.98-3.29c.37.03.74.05 1.14.05 5.52 0 10-3.36 10-7.6S17.52 3 12 3z"/></svg>
+                        <span>카카오톡</span>
+                    </button>
+                    <button class="share-btn share-instagram" onclick="shareInstagram()" id="share-instagram">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2zm-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                        <span>인스타그램</span>
+                    </button>
+                    <button class="share-btn share-facebook" onclick="shareFacebook()" id="share-facebook">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z"/></svg>
+                        <span>페이스북</span>
+                    </button>
+                    <button class="share-btn share-threads" onclick="shareThreads()" id="share-threads">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.5 12.068V12c.013-3.58 1.209-6.399 3.555-8.382C7.015 1.87 9.547 1 12.119 1h.135c2.298.017 4.387.67 6.212 1.939a11.27 11.27 0 013.49 4.165l-2.232 1.06a8.88 8.88 0 00-2.76-3.295c-1.376-.96-2.97-1.458-4.735-1.478-2.028.008-3.97.7-5.464 2.012C5.34 6.73 4.5 8.941 4.5 11.965v.075c0 2.86.695 5.152 2.067 6.813 1.384 1.676 3.5 2.563 6.293 2.636l.009.001c.552 0 2.097-.097 3.507-.876 1.107-.611 1.87-1.522 2.261-2.72.263-.8.391-1.698.381-2.682-.017-.027-.058-.038-.11-.044a7.783 7.783 0 01-2.198.295c-2.114 0-3.916-.686-5.207-1.982-1.267-1.272-1.91-2.957-1.91-5.01v-.06c.03-3.923 2.545-6.413 6.413-6.413.893 0 1.72.134 2.46.4a5.77 5.77 0 013.357 2.924c.64 1.226.965 2.72.965 4.44v.076c-.009 1.259-.182 2.41-.515 3.419-.587 1.78-1.728 3.133-3.39 4.022C17.003 23.778 14.937 24 13.3 24h-1.114zm2.7-13.634c-2.427 0-3.942 1.583-3.964 3.983v.033c0 1.38.408 2.494 1.178 3.22.776.732 1.891 1.103 3.314 1.103.607 0 1.188-.076 1.727-.224.014-.45.014-.866 0-1.243-.044-1.246-.294-2.236-.742-2.936a3.4 3.4 0 00-1.513-1.373z"/></svg>
+                        <span>스레드</span>
+                    </button>
+                </div>
+                <button class="share-btn share-save" onclick="saveShareCard()" id="share-save">
+                    📷 이미지로 저장하기
+                </button>
+            </div>
+
             <button class="btn-primary" onclick="goToMaruiri()">
                 종합 평가 →
             </button>
