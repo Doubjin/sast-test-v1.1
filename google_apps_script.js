@@ -81,13 +81,47 @@ function initSheets() {
   SpreadsheetApp.getUi().alert("시트 초기화 완료! ✅");
 }
 
-// ─── POST: 콜시트 데이터 저장 ─────────────────────────────────
+// ─── POST: 데이터 저장 ───────────────────────────────────────
 function doPost(e) {
   try {
     const ss = SpreadsheetApp.openById("1Yt0tv6kkAqUAS7RmDTnYYDOCwsH4bBFsniLQorxM-iE");
-    let sheet = ss.getSheetByName(SHEET_NAME_REGISTRATION);
+    const data = JSON.parse(e.postData.contents);
 
-    // 시트가 없으면 생성
+    // SAST 유형 한글 매핑
+    const typeMap = {
+      'ambient': '🎙️ 앰비언스',
+      'wireless': '📡 와이어리스',
+      'mixer': '🎚️ 믹서',
+      'dynamic': '🎤 다이나믹'
+    };
+
+    // ── 통계 전용 전송 (종합 평가 클릭 시) ──
+    if (data._action === 'stats_only') {
+      let typeSheet = ss.getSheetByName("유형기록");
+      if (!typeSheet) {
+        typeSheet = ss.insertSheet("유형기록");
+        typeSheet.getRange(1, 1, 1, 2).setValues([["기록일시", "SAST유형"]]);
+        typeSheet.getRange(1, 1, 1, 2)
+          .setFontWeight("bold")
+          .setBackground("#33A474")
+          .setFontColor("#FFFFFF");
+        typeSheet.setFrozenRows(1);
+      }
+      typeSheet.appendRow([
+        new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+        typeMap[data.resultType] || data.resultType || ""
+      ]);
+
+      // 통계 업데이트
+      updateStatsFromAll(ss);
+
+      return ContentService
+        .createTextOutput(JSON.stringify({ success: true, message: "유형 통계 기록 완료!" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ── 콜시트 전체 등록 ──
+    let sheet = ss.getSheetByName(SHEET_NAME_REGISTRATION);
     if (!sheet) {
       sheet = ss.insertSheet(SHEET_NAME_REGISTRATION);
       const headers = [
@@ -99,21 +133,9 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
 
-    // 데이터 파싱
-    const data = JSON.parse(e.postData.contents);
-
-    // 특기파트가 배열이면 콤마로 합치기
     const skills = Array.isArray(data.cs_skills)
       ? data.cs_skills.join(", ")
       : (data.cs_skills || "");
-
-    // SAST 유형 한글 매핑
-    const typeMap = {
-      'ambient': '🎙️ 앰비언스',
-      'wireless': '📡 와이어리스',
-      'mixer': '🎚️ 믹서',
-      'dynamic': '🎤 다이나믹'
-    };
 
     const row = [
       new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
@@ -129,9 +151,7 @@ function doPost(e) {
     ];
 
     sheet.appendRow(row);
-
-    // 통계 업데이트
-    updateStats(ss);
+    updateStatsFromAll(ss);
 
     return ContentService
       .createTextOutput(JSON.stringify({ success: true, message: "등록 완료!" }))
@@ -150,7 +170,7 @@ function doGet(e) {
     const ss = SpreadsheetApp.openById("1Yt0tv6kkAqUAS7RmDTnYYDOCwsH4bBFsniLQorxM-iE");
 
     // 통계 재계산
-    updateStats(ss);
+    updateStatsFromAll(ss);
 
     // 통계 시트에서 데이터 읽기
     const statsSheet = ss.getSheetByName(SHEET_NAME_STATS);
@@ -196,12 +216,9 @@ function doGet(e) {
   }
 }
 
-// ─── 통계 자동 업데이트 ───────────────────────────────────────
-function updateStats(ss) {
-  const regSheet = ss.getSheetByName(SHEET_NAME_REGISTRATION);
+// ─── 통계 자동 업데이트 (유형기록 + 스텝등록 합산) ────────────
+function updateStatsFromAll(ss) {
   let statsSheet = ss.getSheetByName(SHEET_NAME_STATS);
-
-  if (!regSheet) return;
 
   // 통계 시트가 없으면 생성
   if (!statsSheet) {
@@ -219,25 +236,35 @@ function updateStats(ss) {
     statsSheet.getRange(2, 1, typeData.length, typeData[0].length).setValues(typeData);
   }
 
-  // 스텝등록 시트에서 유형 카운트
-  const lastRow = regSheet.getLastRow();
-  if (lastRow < 2) return; // 헤더만 있는 경우
-
-  const typeColumn = regSheet.getRange(2, 10, lastRow - 1, 1).getValues(); // J열 = SAST유형
-  const counts = { ambient: 0, wireless: 0, mixer: 0, dynamic: 0 };
-
   const typeKeyMap = {
     '🎙️ 앰비언스': 'ambient',
     '📡 와이어리스': 'wireless',
     '🎚️ 믹서': 'mixer',
     '🎤 다이나믹': 'dynamic'
   };
+  const counts = { ambient: 0, wireless: 0, mixer: 0, dynamic: 0 };
 
-  typeColumn.forEach(row => {
-    const val = (row[0] || "").toString().trim();
-    const key = typeKeyMap[val] || val;
-    if (counts.hasOwnProperty(key)) counts[key]++;
-  });
+  // 유형기록 시트에서 카운트
+  const typeSheet = ss.getSheetByName("유형기록");
+  if (typeSheet && typeSheet.getLastRow() >= 2) {
+    const typeCol = typeSheet.getRange(2, 2, typeSheet.getLastRow() - 1, 1).getValues();
+    typeCol.forEach(row => {
+      const val = (row[0] || "").toString().trim();
+      const key = typeKeyMap[val] || val;
+      if (counts.hasOwnProperty(key)) counts[key]++;
+    });
+  }
+
+  // 스텝등록 시트에서 카운트
+  const regSheet = ss.getSheetByName(SHEET_NAME_REGISTRATION);
+  if (regSheet && regSheet.getLastRow() >= 2) {
+    const regCol = regSheet.getRange(2, 10, regSheet.getLastRow() - 1, 1).getValues();
+    regCol.forEach(row => {
+      const val = (row[0] || "").toString().trim();
+      const key = typeKeyMap[val] || val;
+      if (counts.hasOwnProperty(key)) counts[key]++;
+    });
+  }
 
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
 
@@ -279,6 +306,6 @@ function onOpen() {
 
 function refreshStats() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  updateStats(ss);
+  updateStatsFromAll(ss);
   SpreadsheetApp.getUi().alert("통계가 업데이트되었습니다! 📊");
 }

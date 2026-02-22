@@ -426,8 +426,29 @@ function showResult() {
 }
 
 function goToMaruiri() {
+    // 종합 평가 클릭 시 유형 결과를 즉시 Google Sheets에 전송
+    sendResultType();
     renderStatistics();
     showScreen('mamuiri');
+}
+
+function sendResultType() {
+    if (!GOOGLE_SHEET_URL || !state.resultType) return;
+
+    const data = {
+        resultType: state.resultType.id,
+        _action: 'stats_only' // 통계 전용 전송 표시
+    };
+
+    fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+        .then(() => console.log('유형 통계 전송 완료'))
+        .catch(err => console.error('유형 통계 전송 실패:', err));
 }
 
 function renderStatistics() {
