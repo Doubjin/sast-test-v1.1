@@ -572,10 +572,8 @@ function renderCallsheetForm() {
     </div>
     
     <div class="cs-form-compact">
-      <div class="cs-row">
-        ${getFieldHTML(F.cs_name)}
-        ${getFieldHTML(F.cs_gender)}
-      </div>
+      ${getFieldHTML(F.cs_name)}
+      ${getFieldHTML(F.cs_gender)}
       <div class="cs-row">
         ${getFieldHTML(F.cs_age)}
         ${getFieldHTML(F.cs_region)}
