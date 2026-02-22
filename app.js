@@ -253,7 +253,13 @@ function startTest() {
 }
 
 // ─── CONFIGURATION ────────────────────────────────────────────────────────
-const GOOGLE_SHEET_URL = ""; // 구글 앱스 스크립트 웹 앱 URL을 여기에 붙여넣으세요.
+// [설정 방법]
+// 1. Google Spreadsheet 열기: https://docs.google.com/spreadsheets/d/1Yt0tv6kkAqUAS7RmDTnYYDOCwsH4bBFsniLQorxM-iE
+// 2. 확장 프로그램 → Apps Script 클릭
+// 3. google_apps_script.js 파일의 내용을 모두 복사하여 붙여넣기
+// 4. 배포 → 새 배포 → 유형: 웹 앱 → 실행 사용자: 나, 액세스: 모든 사용자 → 배포
+// 5. 생성된 URL을 아래에 붙여넣기
+const GOOGLE_SHEET_URL = ""; // ← 여기에 Apps Script 웹 앱 URL 붙여넣기
 const CHOICE_COLORS = ['#4298B4', '#33A474', '#88619A', '#E4AE3A'];
 const CHOICE_LETTERS = ['A', 'B', 'C', 'D'];
 
