@@ -259,7 +259,7 @@ function startTest() {
 // 3. google_apps_script.js 파일의 내용을 모두 복사하여 붙여넣기
 // 4. 배포 → 새 배포 → 유형: 웹 앱 → 실행 사용자: 나, 액세스: 모든 사용자 → 배포
 // 5. 생성된 URL을 아래에 붙여넣기
-const GOOGLE_SHEET_URL = ""; // ← 여기에 Apps Script 웹 앱 URL 붙여넣기
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyOXQSYRpWT8gqLiDxc1pyQoFdeSbe-ihb_BrEimqUC_7-ssZms0E-6br_NAuYyYYyG/exec";
 const CHOICE_COLORS = ['#4298B4', '#33A474', '#88619A', '#E4AE3A'];
 const CHOICE_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -632,8 +632,8 @@ function submitCallsheet() {
         return;
     }
 
-    // 전송 버튼 시각적 배려
-    const submitBtn = document.querySelector('.btn-primary');
+    // 전송 버튼 시각적 배려 (콜시트 카드 내부의 버튼만 타겟)
+    const submitBtn = document.querySelector('#cs-card .btn-primary');
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '전송 중... 🚀';
@@ -779,6 +779,25 @@ function goToEnding() {
 }
 
 function restartTest() {
+    // 상태 완전 초기화 (처음 시작과 동일하게)
+    state = {
+        currentScreen: 'intro',
+        qIndex: 0,
+        scores: { ambient: 0, wireless: 0, mixer: 0, dynamic: 0 },
+        history: [],
+        resultType: null,
+        p2Index: 0,
+        p2Score: 0,
+        p2Answered: false,
+        csIndex: 0,
+        csData: {},
+        multiSelected: []
+    };
+
+    // 콜시트 폼 초기화 (전송 중 버튼 상태 리셋)
+    const csCard = document.getElementById('cs-card');
+    if (csCard) csCard.innerHTML = '';
+
     showScreen('intro');
 }
 
